@@ -56,3 +56,111 @@ This echoes a *very important* design philosophy:
 ```
 - `Login Portal | ` is a static string
 - ... but `${title_suffix()}` is a function which will be expanded during render.
+
+
+
+# Another snippet
+```
+(module web-portal)
+  (set [wp-js,wp-css] = /web-portal/public/[js,css]/
+(html utf-8 lang=en)
+  (title)
+    Login Portal
+  (styles 
+    href [
+      $(wp-css)
+        styles
+        form
+        login
+    ]
+  )
+  (script
+    src [
+      $(wp-js)
+        main
+        form-helper
+        validation
+        recover-pw
+    ]
+  )
+```
+
+## The `(set ...)` syntax
+- It is indented underneath our `module` definition
+  - This means that the instruction `set` is to be applied to the `web-portal` module
+- Explaning the syntax:
+  - `set [wp-js,wp-css] = [...]`
+    - works just like array destructuring in javascript
+    - ` = /web-portal/public/[js,css]/` returns two directory paths within an array:
+      ```json
+        [
+          "/web-portal/public/js/",
+          "/web-portal/public/css/"
+        ]
+      ```
+  - Therefore, `wp-js` now holds `"/web-portal/public/js/"`
+  - ... and `wp-css` now holds `"/web-portal/public/css/"`
+
+## The `styles` mechanism
+```
+  (styles 
+    href [
+      $(wp-css)
+        styles
+        form
+        login
+    ]
+  )
+```
+- The `styles` instruction is the equivalent of:
+```html
+<link rel="stylesheet" href="/vendor/css/bootstrap.css"/>
+```
+- In fact, if all we wanted to do was import `/vendor/css/bootstrap.css`:
+```
+  (style href /vendor/css/bootstrap.css)
+```
+
+- But our example is different. We have an *ARRAY* of strings.
+  - but why are they just strings?
+- First let's understand `$(wp-css)`:
+  - We captured `wp-css` in our `(set [...] ...)` command
+  - Now, `$(wp-css)` is a directory and every string below it under it's child indentation is a css file
+```
+  href [
+    $(wp-css)
+      styles
+      form
+      login
+  ]
+```
+- We *don't* have to specify the `.css` because it's *SEMANTICALLY* assumed
+- This will generate the following html:
+```html
+<link rel="stylesheet" href="/web-portal/public/css/styles.css"/>
+<link rel="stylesheet" href="/web-portal/public/css/form.css"/>
+<link rel="stylesheet" href="/web-portal/public/css/login.css"/>
+```
+
+... *CONCISE*.. *SEMANTIC*... *MARKUP*...
+
+## `(script)` instruction
+```
+  (script
+    src [
+      $(wp-js)
+        main
+        form-helper
+        validation
+        recover-pw
+    ]
+```
+- `script` is exactly like `styles` except it generates `<script>` tags
+- The above snippet will generate:
+```html
+<script src="/web-portal/public/js/main.js" type="text/javascript"></script>
+<script src="/web-portal/public/js/form-helper.js" type="text/javascript"></script>
+<script src="/web-portal/public/js/validation.js" type="text/javascript"></script>
+<script src="/web-portal/public/js/recover-pw.js" type="text/javascript"></script>
+```
+- We *don't* have to specify the `.js` because it's *SEMANTICALLY* assumed
