@@ -1,0 +1,13 @@
+{
+  "indent": 2,
+  "noarg": true,
+  "node": true,
+  "noempty": true,
+  "quotmark": "single",
+  "regexp": true,
+  "smarttabs": false,
+  "strict": true,
+  "trailing": true,
+  "undef": true,
+  "unused": true,
+}
